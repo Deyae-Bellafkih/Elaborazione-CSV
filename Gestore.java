@@ -96,4 +96,21 @@ public class Gestore {
         System.arraycopy(originale, 0, nuovo, 0, originale.length);
         return nuovo;
     }
+
+    public int lunghezzaMassimaRecord() {
+        int maxLunghezza = 0;
+        for (int i = 0; i < numeroRecord; i++) {
+            String[] campi = records[i].getCampiCompleti();
+            int lunghezzaRecord = 0;
+            for (String campo : campi) {
+                lunghezzaRecord = lunghezzaRecord + campo.length();
+            }
+            if (lunghezzaRecord > maxLunghezza) {
+                maxLunghezza = lunghezzaRecord;
+            }
+        }
+        return maxLunghezza;
+    }
 }
+
+
