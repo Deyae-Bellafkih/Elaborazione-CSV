@@ -17,15 +17,26 @@ public class Gestore {
         BufferedReader br = new BufferedReader(new FileReader(nomeFile));
 
         intestazione = separa(br.readLine());
-        intestazione = estendiArray(intestazione, 2);
-        intestazione[intestazione.length - 2] = "miovalore";
-        intestazione[intestazione.length - 1] = "cancellato";
+
+        boolean aggiungiCampi = true;
+        for (String s : intestazione) {
+            if (s.equalsIgnoreCase("miovalore") || s.equalsIgnoreCase("cancellato")) {
+                aggiungiCampi = false;
+                break;
+            }
+        }
+        if (aggiungiCampi) {
+            intestazione = estendiArray(intestazione, 2);
+            intestazione[intestazione.length - 2] = "miovalore";
+            intestazione[intestazione.length - 1] = "cancellato";
+        }
 
         String riga;
         while ((riga = br.readLine()) != null) {
             String[] campi = separa(riga);
             aggiungiRecordInterno(new RecordSuicidio(campi, 10 + random.nextInt(11)));
         }
+
         br.close();
     }
 
@@ -64,24 +75,46 @@ public class Gestore {
     }
 
     public void aggiungiRecord(String[] campi) {
-        aggiungiRecordInterno(
-                new RecordSuicidio(campi, 10 + random.nextInt(11))
-        );
+        aggiungiRecordInterno(new RecordSuicidio(campi, 10 + random.nextInt(11)));
     }
 
-    public void visualizzaTreCampi() {
+    public void visualizzaTreCampi(int c1, int c2, int c3) {
         for (int i = 0; i < numeroRecord; i++) {
-            String[] c = records[i].getCampiCompleti();
-            System.out.println(c[0] + " | " + c[1] + " | " + c[2]);
+            if (!records[i].isCancellato()) {
+                String[] c = records[i].getCampiCompleti();
+            System.out.println(c[c1] + " | " + c[c2] + " | " + c[c3]);
+            }
         }
     }
 
-    public void salvaFile(String nomeFile) throws IOException {
+    public boolean modificaRecord(String chiave, String[] nuoviCampi) {
+        RecordSuicidio record = cercaPerChiave(chiave);
+        if (record != null) {
+            for (int i = 0; i < nuoviCampi.length && i < record.getCampiCompleti().length - 2; i++) {
+                record.modificaCampo(i, nuoviCampi[i]);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void cancellaRecord(String chiave) {
+        RecordSuicidio record = cercaPerChiave(chiave);
+        if (record != null) {
+            record.cancellaLogicamente();
+        }
+    }
+
+    public void salvaFileFisso(String nomeFile) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(nomeFile));
 
         pw.println(String.join(";", intestazione));
+
         for (int i = 0; i < numeroRecord; i++) {
-            pw.println(String.join(";", records[i].getCampiCompleti()));
+            if (!records[i].isCancellato()) {
+                String[] c = records[i].getCampiCompleti();
+                pw.println(String.join(";", c));
+            }
         }
 
         pw.close();
@@ -96,33 +129,4 @@ public class Gestore {
         System.arraycopy(originale, 0, nuovo, 0, originale.length);
         return nuovo;
     }
-
-    public int lunghezzaMassimaRecord() {
-        int maxLunghezza = 0;
-        for (int i = 0; i < numeroRecord; i++) {
-            String[] campi = records[i].getCampiCompleti();
-            int lunghezzaRecord = 0;
-            for (String campo : campi) {
-                lunghezzaRecord = lunghezzaRecord + campo.length();
-            }
-            if (lunghezzaRecord > maxLunghezza) {
-                maxLunghezza = lunghezzaRecord;
-            }
-        }
-        return maxLunghezza;
-    }
-
-    public boolean modificaRecord(String chiave, String[] nuoviCampi) {
-        RecordSuicidio record = cercaPerChiave(chiave);
-        if (record != null) {
-            for (int i = 0; i < nuoviCampi.length && i < record.getCampiCompleti().length - 2; i++) {
-                record.modificaCampo(i, nuoviCampi[i]);
-            }
-            return true;
-        }
-        return false;
-    }
-
 }
-
-

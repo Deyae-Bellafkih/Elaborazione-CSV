@@ -22,10 +22,16 @@ public class RecordSuicidio {
     }
 
     public void modificaCampo(int indice, String valore) {
-        campi[indice] = valore;
+        if (indice >= 0 && indice < campi.length) {
+            campi[indice] = valore;
+        }
     }
 
     public void cancellaLogicamente() {
         cancellato = true;
+    }
+
+    public boolean isCancellato() {
+        return cancellato;
     }
 }
