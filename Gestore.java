@@ -111,6 +111,18 @@ public class Gestore {
         }
         return maxLunghezza;
     }
+
+    public boolean modificaRecord(String chiave, String[] nuoviCampi) {
+        RecordSuicidio record = cercaPerChiave(chiave);
+        if (record != null) {
+            for (int i = 0; i < nuoviCampi.length && i < record.getCampiCompleti().length - 2; i++) {
+                record.modificaCampo(i, nuoviCampi[i]);
+            }
+            return true;
+        }
+        return false;
+    }
+
 }
 
 
